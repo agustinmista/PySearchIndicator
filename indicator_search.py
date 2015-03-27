@@ -1,4 +1,4 @@
-import webbrowser
+import webbrowser, sys
 from gi.repository import Gtk, GLib, GObject
 try:
        from gi.repository import AppIndicator3 as AppIndicator
@@ -69,7 +69,7 @@ class IndicatorSearch:
 
     def handler_menu_exit(self, evt):
         Gtk.main_quit()
-
+        sys.exit(1)
 
     def main(self):
         Gtk.main()
@@ -81,7 +81,6 @@ class EntryWindow(Gtk.Window):
         self.set_decorated(False)
         self.set_resizable(False)
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.get_focus()
         self.set_icon_name("search")
         self.set_size_request(300, 50)
 

@@ -1,0 +1,9 @@
+# engines.list
+# List below the search engines to load and their query strings
+
+Google          https://www.google.com/search?q=
+Wikipedia       https://wikipedia.org/wiki/Special:Search/
+Wolfram|Alpha   http://www.wolframalpha.com/input/?i=
+GitHub          https://github.com/search?q=
+Reddit          http://www.reddit.com/search?q=
+YouTube         https://www.youtube.com/results?search_query=

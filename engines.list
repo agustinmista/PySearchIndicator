@@ -1,6 +1,7 @@
 # engines.list
 # List below the search engines to load and their query strings
 
+Google Maps     https://www.google.com.ar/maps/search/
 Google          https://www.google.com/search?q=
 Wikipedia       https://wikipedia.org/wiki/Special:Search/
 Wolfram|Alpha   http://www.wolframalpha.com/input/?i=

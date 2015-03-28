@@ -1,5 +1,5 @@
 import webbrowser, sys
-from gi.repository import Gtk, GLib, GObject
+from gi.repository import Gtk, GLib, GObject, Gdk
 try:
        from gi.repository import AppIndicator3 as AppIndicator
 except:
@@ -31,7 +31,7 @@ class IndicatorSearch:
 
         # Edit the search engines list
         item = Gtk.MenuItem()
-        item.set_label("Edit engines")
+        item.set_label("Edit engines...")
         item.connect("activate", self.handler_edit_engines)
         item.show()
         self.menu.append(item)
@@ -55,9 +55,8 @@ class IndicatorSearch:
 
     def handler_menu_search(self, evt):
         win = EntryWindow(evt.get_label(), engines)
-        win.connect("delete-event", Gtk.main_quit)
-        win.show_all()
         Gtk.main()
+
 
     def handler_edit_engines(self, evt):
         webbrowser.open("engines.list")
@@ -77,32 +76,54 @@ class IndicatorSearch:
 class EntryWindow(Gtk.Window):
 
     def __init__(self, engine, engines):
-        Gtk.Window.__init__(self, title="Search on "+engine)
-        self.set_decorated(False)
+        Gtk.Window.__init__(self)
         self.set_resizable(False)
-        self.set_position(Gtk.WindowPosition.CENTER)
-        self.set_icon_name("search")
         self.set_size_request(300, 50)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_type_hint(Gdk.WindowTypeHint.NOTIFICATION)
+        self.set_keep_above(True)
+        self.set_icon_name("search")
+        self.connect("delete-event", Gtk.main_quit)
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(vbox)
 
+        # Entry
         self.entry = Gtk.Entry()
         self.entry.set_icon_from_stock(Gtk.EntryIconPosition.SECONDARY, Gtk.STOCK_FIND)
+        self.entry.set_text("Search on "+engine)
         self.entry.connect("activate", self.handler_search, engine)
+        self.entry.connect("focus-out-event", self.handler_exit)
+        self.entry.connect("changed", self.on_text_change)
         self.entry.connect("key-release-event", self.on_key_release)
         vbox.pack_start(self.entry, True, True, 0)
 
-        self.button = Gtk.Button("Search")
+        # Button
+        self.button = Gtk.Button("Exit")
         self.button.connect("clicked", self.handler_search, engine)
         vbox.pack_start(self.button, True, True, 0)
 
+        self.show_all()
+
+    def on_text_change(self, string):
+        if self.entry.get_text_length() is 0:
+            self.button.set_label("Exit")
+        else:
+            self.button.set_label("Search")
+
+    def handler_exit(self, event, user_param1):
+        if not self.has_toplevel_focus():
+            self.destroy()
+
     def handler_search(self, widget, engine):
-        query = self.entry.get_text()
-        print "Searching for '"+query+"' at "+engine
-        query = query.replace(' ', '+')
-        webbrowser.open(engines[engine]+query)
-        self.destroy()
+        if self.button.get_label() == "Search":
+            query = self.entry.get_text()
+            print "Searching for '"+query+"' at "+engine
+            query = query.replace(' ', '+')
+            webbrowser.open(engines[engine]+query)
+            self.destroy()
+        else:
+            self.destroy()
 
     def on_key_release(self, widget, ev, data=None):
         if ev.keyval == 65307: #ESC key
@@ -116,8 +137,9 @@ def get_engines():
         for line in f:
             line = line.split()
             if len(line) > 0:
-                if line[0][0] is not '#' and len(line) == 2:
-                    (key, val) = line
+                if line[0][0] is not '#' and len(line) >= 2:
+                    key = " ".join(line[0:len(line)-1])
+                    val = line[len(line)-1]
                     eng[key] = val
                     print "Added: '"+key+"' -> '"+val+"'"
 

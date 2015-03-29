@@ -1,4 +1,4 @@
-import webbrowser, sys
+import webbrowser, sys, os
 from gi.repository import Gtk, GLib, GObject, Gdk
 try:
        from gi.repository import AppIndicator3 as AppIndicator
@@ -59,7 +59,7 @@ class IndicatorSearch:
 
 
     def handler_edit_engines(self, evt):
-        webbrowser.open("engines.list")
+        webbrowser.open(os.path.join(__location__, "engines.list"))
 
     def handler_reload(self, evt):
         self.menu.destroy()
@@ -133,7 +133,7 @@ class EntryWindow(Gtk.Window):
 def get_engines():
     print "Loading search engines:"
     eng = {}
-    with open("engines.list") as f:
+    with open(os.path.join(__location__, "engines.list")) as f:
         for line in f:
             line = line.split()
             if len(line) > 0:
@@ -146,6 +146,10 @@ def get_engines():
     return eng
 
 if __name__ == "__main__":
+
+    __location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
     engines = get_engines()
     ind = IndicatorSearch(engines)
     ind.main()

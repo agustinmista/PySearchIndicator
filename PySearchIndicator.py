@@ -5,7 +5,7 @@ try:
 except:
        from gi.repository import AppIndicator
 
-class IndicatorSearch:
+class PySearchIndicator:
     def __init__(self, engines):
         # param1: identifier of this indicator
         # param2: name of icon
@@ -151,5 +151,5 @@ if __name__ == "__main__":
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     engines = get_engines()
-    ind = IndicatorSearch(engines)
+    ind = PySearchIndicator(engines)
     ind.main()
